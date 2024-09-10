@@ -51,10 +51,10 @@ func (u userService) AddScore(ctx context.Context, id string) (models.Partner, e
 
 }
 
-func (u userService) PhoneExist(ctx context.Context, phone string) (bool, error) {
+func (u userService) IUserEmailExist(ctx context.Context, phone string) (bool, error) {
     fmt.Println("phone") // Bu chiqadi
 
-    exists, err := u.storage.User().PhoneExist(ctx, phone)
+    exists, err := u.storage.User().IUserEmailExist(ctx, phone)
     if err != nil {
         fmt.Println("Error occurred in PhoneExist:", err)
         return false, fmt.Errorf("error while checking phone existence: %w", err)
@@ -63,4 +63,5 @@ func (u userService) PhoneExist(ctx context.Context, phone string) (bool, error)
     fmt.Println("PhoneExist result:", exists)
     return exists, nil
 }
+
 

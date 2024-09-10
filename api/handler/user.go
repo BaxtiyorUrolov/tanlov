@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"it-tanlov/api/models"
 	"it-tanlov/pkg/check"
+    "it-tanlov/pkg/email"
 	"math/rand"
 	"net/http"
 	"time"
@@ -22,9 +23,13 @@ func generateCode() string {
 	return fmt.Sprintf("%06d", rand.Intn(1000000))
 }
 
-// Function to send verification code via SMS (simulated here, should use actual SMS service)
-func sendCode(phoneNumber string, code string) {
-	fmt.Printf("SMS kod: %s raqamiga yuborildi: %s\n", phoneNumber, code)
+func sendCode(mail string, code string) {
+	err := email.SendEmail(mail, code)
+	if err != nil {
+		fmt.Printf("Failed to send email to: %s, error: %v\n", mail, err)
+	} else {
+		fmt.Printf("Verification code sent to email: %s\n", mail)
+	}
 }
 
 // AddScore godoc
@@ -46,10 +51,10 @@ func (h *Handler) AddScore(c *gin.Context) {
 		return
 	}
 
-	// Check if the phone number already exists (has the user already voted?)
-	exists, err := check.IUserPhoneExist(user.Phone, h.storage.User())
+	// Check if the email already exists (has the user already voted?)
+	exists, err := check.IUserEmailExist(user.Email, h.storage.User()) // Change to check for email
 	if err != nil {
-		handleResponse(c, h.log, "Error while checking phone number existence", http.StatusInternalServerError, err)
+		handleResponse(c, h.log, "Error while checking email existence", http.StatusInternalServerError, err)
 		return
 	}
 	if exists {
@@ -57,15 +62,15 @@ func (h *Handler) AddScore(c *gin.Context) {
 		return
 	}
 
-	// Generate and send code
+	// Generate and send code via email
 	code := generateCode()
-	cacheStore.Set(user.Phone, code, cache.DefaultExpiration)
-	sendCode(user.Phone, code)
+	cacheStore.Set(user.Email, code, cache.DefaultExpiration) // Store code with email key
+	sendCode(user.Email, code)                                // Send to email instead of phone
 
-	// Inform the user that the SMS has been sent
-	handleResponse(c, h.log, "SMS code sent", http.StatusCreated, gin.H{
-		"message":    "SMS code sent, please verify",
-		"phone":      user.Phone,
+	// Inform the user that the email has been sent
+	handleResponse(c, h.log, "Email verification code sent", http.StatusCreated, gin.H{
+		"message":    "Email verification code sent, please verify",
+		"email":      user.Email,
 		"partner_id": user.VideoID, // Video ID
 	})
 }
@@ -83,53 +88,40 @@ func (h *Handler) AddScore(c *gin.Context) {
 // @Failure      404  {object}  models.Response
 // @Failure      500  {object}  models.Response
 func (h *Handler) VerifyCode(c *gin.Context) {
+	var req models.VerifyCodeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handleResponse(c, h.log, "Error while reading body from client", http.StatusBadRequest, err)
+		return
+	}
 
-    // Parse incoming JSON to VerifyCodeRequest struct
-    var req models.VerifyCodeRequest
-    if err := c.ShouldBindJSON(&req); err != nil {
-        fmt.Println("VerifyCode: Error while reading body from client:", err)
-        handleResponse(c, h.log, "Error while reading body from client", http.StatusBadRequest, err)
-        return
-    }
-    fmt.Println("VerifyCode: Received request body:", req)
-
-    phone := req.Phone
-    inputCode := req.Code
+	email := req.Email
+	inputCode := req.Code
 	videoID := req.VideoID
-	
-    // Check the entered code
-    cachedCode, found := cacheStore.Get(phone)
-    if !found {
-        fmt.Println("VerifyCode: Code not found in cache for phone:", phone)
-        handleResponse(c, h.log, "Code not found or expired", http.StatusBadRequest, "Code not found or expired")
-        return
-    }
-    fmt.Println("VerifyCode: Cached Code =", cachedCode)
 
-    if cachedCode != inputCode {
-        fmt.Println("VerifyCode: Incorrect code entered. Cached Code =", cachedCode, "Input Code =", inputCode)
-        handleResponse(c, h.log, "Incorrect code", http.StatusBadRequest, "Incorrect code")
-        return
-    }
+	// Check the entered code
+	cachedCode, found := cacheStore.Get(email)
+	if !found {
+		handleResponse(c, h.log, "Code not found or expired", http.StatusBadRequest, "Code not found or expired")
+		return
+	}
 
+	if cachedCode != inputCode {
+		handleResponse(c, h.log, "Incorrect code", http.StatusBadRequest, "Incorrect code")
+		return
+	}
 
-    // Record the vote
-    err := h.services.User().Create(context.Background(), phone)
-    if err != nil {
-        fmt.Println("VerifyCode: Error while creating user:", err)
-        handleResponse(c, h.log, "Error while creating user", http.StatusInternalServerError, err)
-        return
-    }
-    fmt.Println("VerifyCode: User created successfully")
+	// Record the vote
+	err := h.services.User().Create(context.Background(), email)
+	if err != nil {
+		handleResponse(c, h.log, "Error while creating user", http.StatusInternalServerError, err)
+		return
+	}
 
-    addScore, err := h.services.User().AddScore(context.Background(), videoID)
-    if err != nil {
-        fmt.Println("VerifyCode: Error while casting vote:", err)
-        handleResponse(c, h.log, "Error while casting vote", http.StatusInternalServerError, err.Error())
-        return
-    }
-    fmt.Println("VerifyCode: Vote successfully recorded")
+	addScore, err := h.services.User().AddScore(context.Background(), videoID)
+	if err != nil {
+		handleResponse(c, h.log, "Error while casting vote", http.StatusInternalServerError, err.Error())
+		return
+	}
 
-    handleResponse(c, h.log, "Vote successfully recorded", http.StatusOK, addScore)
-    fmt.Println("VerifyCode: Response sent successfully")
+	handleResponse(c, h.log, "Vote successfully recorded", http.StatusOK, addScore)
 }

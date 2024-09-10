@@ -43,8 +43,8 @@ func IVideoLinkExist(video_link string, partnerStorage storage.IPartnerStorage) 
 }
 
 
-func IUserPhoneExist(phone string, userStorage storage.IUserStorage) (bool, error) {
-	exists, err := userStorage.PhoneExist(context.Background(), phone)
+func IUserEmailExist(phone string, userStorage storage.IUserStorage) (bool, error) {
+	exists, err := userStorage.IUserEmailExist(context.Background(), phone)
 	if err != nil {
 		return false, fmt.Errorf("error while checking phone existence: %w", err)
 	}

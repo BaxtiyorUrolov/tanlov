@@ -25,6 +25,6 @@ type IPartnerStorage interface {
 type IUserStorage interface {
 	Create(context.Context, string) error
 	AddScore(context.Context, string) error
-	PhoneExist(context.Context, string) (bool, error)
+	IUserEmailExist(context.Context, string) (bool, error)
 }
 

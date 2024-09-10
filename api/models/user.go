@@ -3,12 +3,12 @@
 package models
 
 type User struct {
-	Phone     	string `json:"phone"`
+	Email     	string `json:"email"`
 	VideoID     string `json:"video_id"`
 }
 
 type VerifyCodeRequest struct {
-    Phone    string `json:"phone"`
+    Email    string `json:"email"`
     Code     string `json:"code"`
     VideoID  string `json:"video_id"`
 }

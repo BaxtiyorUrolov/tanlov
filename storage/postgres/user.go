@@ -26,7 +26,7 @@ func (u *userRepo) Create(ctx context.Context, phone string)  error {
 	uid := uuid.New()
 
 	_, err := u.db.Exec(ctx, `
-		INSERT INTO users (id, phone) 
+		INSERT INTO users (id, email) 
 		VALUES ($1, $2)
 		`,
 		uid,
@@ -50,13 +50,13 @@ func (u *userRepo) AddScore(ctx context.Context, id string)  error {
 	return  nil
 }
 
-func (u *userRepo) PhoneExist(ctx context.Context, phone string) (bool, error) {
+func (u *userRepo) IUserEmailExist(ctx context.Context, email string) (bool, error) {
 	var exists bool
 	err := u.db.QueryRow(ctx, `
-		SELECT EXISTS (SELECT 1 FROM users WHERE phone = $1)
-	`, phone).Scan(&exists)
+		SELECT EXISTS (SELECT 1 FROM users WHERE email = $1)
+	`, email).Scan(&exists)
 	if err != nil {
-		fmt.Println("error while checking phone existence:", err)
+		fmt.Println("error while checking email existence:", err)
 		return false, err
 	}
 
