@@ -14,15 +14,7 @@ CREATE TABLE IF NOT EXISTS partners (
 );
 
 CREATE TABLE IF NOT EXISTS users (
-    id UUID PRIMARY KEY,
-    email VARCHAR(100),
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE IF NOT EXISTS verify_cods (
-    id UUID PRIMARY KEY,
-    phone VARCHAR(15) UNIQUE,
-    code INT,
+    id BIGINT PRIMARY KEY,
     created_at TIMESTAMP DEFAULT NOW()
 );
 

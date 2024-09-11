@@ -26,7 +26,7 @@ func New(services service.IServiceManager, storage storage.IStorage, log logger.
 
 	// Apply CORS middleware here globally
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // Faqat frontend (localhost) uchun ruxsat
+		AllowOrigins:     []string{"http://localhost:5173"}, 
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -37,10 +37,6 @@ func New(services service.IServiceManager, storage storage.IStorage, log logger.
 	r.POST("/partner", h.CreatePartner)
 	r.GET("/partner/:id", h.GetPartner)
 	r.GET("/partners", h.GetPartnerList)
-
-	// Voting endpoints
-	r.POST("/user/:partner_id/vote", h.AddScore)
-	r.POST("/user/:partner_id/verify", h.VerifyCode)
 
 	// Swagger documentation route
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

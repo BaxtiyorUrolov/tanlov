@@ -362,7 +362,7 @@ const docTemplate = `{
         "models.User": {
             "type": "object",
             "properties": {
-                "phone": {
+                "email": {
                     "type": "string"
                 },
                 "video_id": {
@@ -376,7 +376,7 @@ const docTemplate = `{
                 "code": {
                     "type": "string"
                 },
-                "phone": {
+                "email": {
                     "type": "string"
                 },
                 "video_id": {

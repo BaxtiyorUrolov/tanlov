@@ -75,7 +75,7 @@ func main() {
 	server.StaticFS("/static", http.Dir("./static"))
 	server.StaticFile("/", "./static/index.html")
 
-	if err := server.Run("195.2.84.169:2005"); err != nil {
+	if err := server.Run("localhost:2005"); err != nil {
 		log.Error("Error while running server: %v", logger.Error(err))
 	}
 }

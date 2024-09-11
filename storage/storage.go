@@ -23,8 +23,8 @@ type IPartnerStorage interface {
 }
 
 type IUserStorage interface {
-	Create(context.Context, string) error
+	Create(context.Context, int) error
 	AddScore(context.Context, string) error
-	IUserEmailExist(context.Context, string) (bool, error)
+	IUserTelegramIDExist(context.Context, int) (bool, error)
 }
 

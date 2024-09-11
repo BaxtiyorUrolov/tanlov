@@ -37,8 +37,9 @@ func (h *Handler) HandleUpdate(update tgbotapi.Update) {
         if update.Message.Photo != nil {
             h.HandleImageMessage(update)
         } else if update.Message.Text != "" {
-            // Xabar matn bo'lsa, bu yerda qayta ishlashingiz mumkin
-            h.log.Info("Text message received", logger.String("text", update.Message.Text))
+            if len(update.Message.Text) > 12 && update.Message.Text[:12] == "/start vote_" {
+                h.AddVote(update.Message)
+            }
         }
     } else if update.CallbackQuery != nil {
         h.HandleCallbackQuery(update.CallbackQuery)

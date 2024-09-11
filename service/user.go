@@ -20,9 +20,9 @@ func NewUserService(storage storage.IStorage, log logger.ILogger) userService {
 	}
 }
 
-func (u userService) Create(ctx context.Context, phone string) error {
+func (u userService) Create(ctx context.Context, telegramID int) error {
 
-	err := u.storage.User().Create(context.Background(), phone)
+	err := u.storage.User().Create(context.Background(), telegramID)
 	if err != nil {
 		u.log.Error("Error while creating user", logger.Error(err))
 		return err
@@ -51,16 +51,15 @@ func (u userService) AddScore(ctx context.Context, id string) (models.Partner, e
 
 }
 
-func (u userService) IUserEmailExist(ctx context.Context, phone string) (bool, error) {
-    fmt.Println("phone") // Bu chiqadi
+func (u userService) IUserTelegramIDExist(ctx context.Context, telegramID int) (bool, error) {
 
-    exists, err := u.storage.User().IUserEmailExist(ctx, phone)
+    exists, err := u.storage.User().IUserTelegramIDExist(ctx, telegramID)
     if err != nil {
-        fmt.Println("Error occurred in PhoneExist:", err)
-        return false, fmt.Errorf("error while checking phone existence: %w", err)
+        fmt.Println("Error occurred in TelegramIDExist:", err)
+        return false, fmt.Errorf("error while checking telegramID existence: %w", err)
     }
 
-    fmt.Println("PhoneExist result:", exists)
+    fmt.Println("TelegramIDExist result:", exists)
     return exists, nil
 }
 

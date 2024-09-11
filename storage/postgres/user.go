@@ -2,11 +2,11 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"it-tanlov/pkg/logger"
 	"it-tanlov/storage"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -22,15 +22,13 @@ func NewUserRepo(db *pgxpool.Pool, log logger.ILogger) storage.IUserStorage {
 	}
 }
 
-func (u *userRepo) Create(ctx context.Context, phone string)  error {
-	uid := uuid.New()
+func (u *userRepo) Create(ctx context.Context, id int)  error {
 
 	_, err := u.db.Exec(ctx, `
-		INSERT INTO users (id, email) 
-		VALUES ($1, $2)
+		INSERT INTO users (id) 
+		VALUES ($1)
 		`,
-		uid,
-		phone,
+		id,
 	)
 	if err != nil {
 		 logger.Error(err)
@@ -50,13 +48,19 @@ func (u *userRepo) AddScore(ctx context.Context, id string)  error {
 	return  nil
 }
 
-func (u *userRepo) IUserEmailExist(ctx context.Context, email string) (bool, error) {
+func (u *userRepo) IUserTelegramIDExist(ctx context.Context, id int) (bool, error) {
 	var exists bool
 	err := u.db.QueryRow(ctx, `
-		SELECT EXISTS (SELECT 1 FROM users WHERE email = $1)
-	`, email).Scan(&exists)
+		SELECT EXISTS (SELECT 1 FROM users WHERE id = $1)
+	`, id).Scan(&exists)
+
 	if err != nil {
-		fmt.Println("error while checking email existence:", err)
+		if err == sql.ErrNoRows {
+			// Bu holatda hech qanday qator topilmadi
+			fmt.Println("No rows found for the provided id")
+			return false, nil
+		}
+		fmt.Println("Error while checking id existence:", err)
 		return false, err
 	}
 
