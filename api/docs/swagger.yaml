@@ -50,22 +50,6 @@ definitions:
       statusCode:
         type: integer
     type: object
-  models.User:
-    properties:
-      email:
-        type: string
-      video_id:
-        type: string
-    type: object
-  models.VerifyCodeRequest:
-    properties:
-      code:
-        type: string
-      email:
-        type: string
-      video_id:
-        type: string
-    type: object
 info:
   contact: {}
 paths:
@@ -100,39 +84,6 @@ paths:
           schema:
             $ref: '#/definitions/models.Response'
       summary: Creates a new partner
-      tags:
-      - partner
-  /partner/{id}:
-    get:
-      consumes:
-      - application/json
-      description: get partner by id
-      parameters:
-      - description: partner_id
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Partner'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.Response'
-      summary: Get partner by id
       tags:
       - partner
   /partners:
@@ -175,70 +126,4 @@ paths:
       summary: Get partner list
       tags:
       - partner
-  /user/{partner_id}/verify:
-    post:
-      consumes:
-      - application/json
-      description: Verify the code entered by the user and cast their vote
-      parameters:
-      - description: verification
-        in: body
-        name: code
-        schema:
-          $ref: '#/definitions/models.VerifyCodeRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.Response'
-      summary: Verify code and cast vote
-      tags:
-      - user
-  /user/{partner_id}/vote:
-    post:
-      consumes:
-      - application/json
-      description: Get the user's phone number and send SMS code for voting
-      parameters:
-      - description: user
-        in: body
-        name: user
-        schema:
-          $ref: '#/definitions/models.User'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/models.Response'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/models.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/models.Response'
-      summary: Send SMS code to user
-      tags:
-      - user
 swagger: "2.0"

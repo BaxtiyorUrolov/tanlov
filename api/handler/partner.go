@@ -169,31 +169,6 @@ func (h *Handler) HandleImageMessage(update tgbotapi.Update) {
 }
 
 
-// GetPartner godoc
-// @Router       /partner/{id} [GET]
-// @Summary      Get partner by id
-// @Description  get partner by id
-// @Tags         partner
-// @Accept       json
-// @Produce      json
-// @Param        id path string true "partner_id"
-// @Success      201  {object}  models.Partner
-// @Failure      400  {object}  models.Response
-// @Failure      404  {object}  models.Response
-// @Failure      500  {object}  models.Response
-func (h Handler) GetPartner(c *gin.Context) {
-	uid := c.Param("id")
-
-	partners, err := h.services.Partner().Get(context.Background(), models.PrimaryKey{ID: uid})
-	if err != nil {
-		handleResponse(c, h.log, "error is while getting by id", http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	handleResponse(c, h.log, "", http.StatusOK, partners)
-}
-
-
 // GetPartnerList godoc
 // @Router       /partners [GET]
 // @Summary      Get partner list

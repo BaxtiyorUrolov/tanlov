@@ -10,13 +10,11 @@ import (
 	"it-tanlov/pkg/logger"
 	"it-tanlov/service"
 	"it-tanlov/storage/postgres"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/cors"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -44,8 +42,6 @@ func main() {
 
 	server := api.New(services, store, log, botInstance)
 
-	server.Use(cors.Default())
-
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
@@ -72,10 +68,7 @@ func main() {
 		}
 	}()
 
-	server.StaticFS("/static", http.Dir("./static"))
-	server.StaticFile("/", "./static/index.html")
-
-	if err := server.Run("localhost:2005"); err != nil {
+	if err := server.Run("195.2.84.169:2005"); err != nil {
 		log.Error("Error while running server: %v", logger.Error(err))
 	}
 }

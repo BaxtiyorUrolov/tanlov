@@ -12,7 +12,6 @@ require (
 	github.com/jackc/pgx/v5 v5.7.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/spf13/cast v1.7.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0

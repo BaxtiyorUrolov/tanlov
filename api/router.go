@@ -24,18 +24,28 @@ func New(services service.IServiceManager, storage storage.IStorage, log logger.
 
 	r.Use(gin.Logger())
 
-	// Apply CORS middleware here globally
 	corsConfig := cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, 
+		AllowOrigins:     []string{"http://localhost:5173"},  // Frontend manzili
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}
-	r.Use(cors.New(corsConfig)) // CORS middleware applied
+	r.Use(cors.New(corsConfig))	
+
+	r.Use(func(c *gin.Context) {
+		c.Header("Access-Control-Max-Age", "3600") // So'rovni cache qilish muddati
+
+		// Agar OPTIONS so'rovi bo'lsa, javobni 204 status bilan qaytarish
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		// Keyingi middlewarelarga o'tkazish
+		c.Next()
+	})
 
 	r.POST("/partner", h.CreatePartner)
-	r.GET("/partner/:id", h.GetPartner)
 	r.GET("/partners", h.GetPartnerList)
 
 	// Swagger documentation route
