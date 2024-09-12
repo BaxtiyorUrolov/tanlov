@@ -2,9 +2,10 @@ package config
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/spf13/cast"
-	"os"
 )
 
 type Config struct {
@@ -13,11 +14,12 @@ type Config struct {
 	PostgresUser     string
 	PostgresPassword string
 	PostgresDB       string
-	Token   		 string
-	BotToken		 string
+	Token            string
+	BotToken         string
 
 	ServiceName string
 	LoggerLevel string
+	HTTPPort    string
 }
 
 func Load() Config {
@@ -35,6 +37,7 @@ func Load() Config {
 	cfg.BotToken = cast.ToString(getOrReturnDefault("BOT_TOKEN", "bot token"))
 	cfg.ServiceName = cast.ToString(getOrReturnDefault("SERVICE_NAME", "store"))
 	cfg.LoggerLevel = cast.ToString(getOrReturnDefault("LOGGER_LEVEL", "debug"))
+	cfg.HTTPPort = cast.ToString(getOrReturnDefault("HTTP_PORT", ":7070"))
 	return cfg
 }
 

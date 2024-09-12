@@ -16,7 +16,7 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
-const telegramUserID int64 = 6358749851
+const telegramUserID int64 = 1377636243
 
 // CreatePartner godoc
 // @Router       /partner [POST]

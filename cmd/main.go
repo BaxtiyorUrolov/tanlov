@@ -16,6 +16,7 @@ import (
 	"time"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -40,7 +41,7 @@ func main() {
 
 	h := handler.New(services, store, log, botInstance)
 
-	server := api.New(services, store, log, botInstance)
+	server := api.New(cfg, log, services, store, botInstance, h)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
@@ -68,7 +69,15 @@ func main() {
 		}
 	}()
 
-	if err := server.Run("195.2.84.169:2005"); err != nil {
-		log.Error("Error while running server: %v", logger.Error(err))
+	go func() {
+		if err := server.Run(); err != nil {
+			log.Error("Error run http server", zap.Error(err))
+		}
+	}()
+
+	<-ctx.Done()
+
+	if err := server.Shutdown(ctx); err != nil {
+		log.Error("failed http graceful shutdown", zap.Error(err))
 	}
 }
