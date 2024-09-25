@@ -51,7 +51,7 @@ func (u userService) AddScore(ctx context.Context, id string) (models.Partner, e
 
 }
 
-func (u userService) IUserTelegramIDExist(ctx context.Context, telegramID int) (bool, error) {
+func (u userService) UserTelegramIDExist(ctx context.Context, telegramID int) (bool, error) {
 
     exists, err := u.storage.User().IUserTelegramIDExist(ctx, telegramID)
     if err != nil {
@@ -62,5 +62,4 @@ func (u userService) IUserTelegramIDExist(ctx context.Context, telegramID int) (
     fmt.Println("TelegramIDExist result:", exists)
     return exists, nil
 }
-
 

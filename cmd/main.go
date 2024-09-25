@@ -1,5 +1,3 @@
-//cmd/main.go
-
 package main
 
 import (
@@ -39,7 +37,7 @@ func main() {
 		return
 	}
 
-	h := handler.New(services, store, log, botInstance)
+	h := handler.New(services, log, botInstance)
 
 	server := api.New(cfg, log, services, store, botInstance, h)
 
@@ -61,7 +59,6 @@ func main() {
 					continue
 				}
 				for _, update := range updates {
-					// Umumiy `HandleUpdate` funksiyasini chaqirish
 					h.HandleUpdate(update)
 					offset = update.UpdateID + 1
 				}

@@ -14,12 +14,12 @@ type IStorage interface {
 type IPartnerStorage interface {
 	Create(context.Context, models.CreatePartner) (string, error)
 	GetByID(context.Context, models.PrimaryKey) (models.Partner, error)
-	GetList(context.Context, models.GetListRequest)(models.PartnerResponse, error)
-	Update(context.Context, string, string) error
+	GetList(context.Context, models.GetListRequest) (models.PartnerResponse, error)
+	Update(context.Context, string) error
 	Delete(context.Context, string) error
 	PhoneExist(context.Context, string) (bool, error)
-	IEmailExist(context.Context, string) (bool, error)
-	IVideoLinkExist(context.Context, string) (bool, error)
+	EmailExist(context.Context, string) (bool, error)
+	VideoLinkExist(context.Context, string) (bool, error)
 }
 
 type IUserStorage interface {
@@ -27,4 +27,3 @@ type IUserStorage interface {
 	AddScore(context.Context, string) error
 	IUserTelegramIDExist(context.Context, int) (bool, error)
 }
-

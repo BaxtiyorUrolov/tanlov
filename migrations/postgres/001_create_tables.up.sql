@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS partners (
     video_link VARCHAR(100) UNIQUE,
     score INT DEFAULT 0,
     video_verify BOOLEAN DEFAULT FALSE,
-    image_path VARCHAR(255),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP,
     deleted_at INTEGER DEFAULT 0

@@ -14,7 +14,7 @@ type Config struct {
 	PostgresUser     string
 	PostgresPassword string
 	PostgresDB       string
-	Token            string
+	BotAdmin         int64
 	BotToken         string
 
 	ServiceName string
@@ -33,7 +33,7 @@ func Load() Config {
 	cfg.PostgresUser = cast.ToString(getOrReturnDefault("POSTGRES_USER", "your user"))
 	cfg.PostgresPassword = cast.ToString(getOrReturnDefault("POSTGRES_PASSWORD", "your password"))
 	cfg.PostgresDB = cast.ToString(getOrReturnDefault("POSTGRES_DB", "your database"))
-	cfg.Token = cast.ToString(getOrReturnDefault("TOKEN", "your token"))
+	cfg.BotAdmin = cast.ToInt64(getOrReturnDefault("BOT_ADMIN", "your telegram id"))
 	cfg.BotToken = cast.ToString(getOrReturnDefault("BOT_TOKEN", "bot token"))
 	cfg.ServiceName = cast.ToString(getOrReturnDefault("SERVICE_NAME", "store"))
 	cfg.LoggerLevel = cast.ToString(getOrReturnDefault("LOGGER_LEVEL", "debug"))

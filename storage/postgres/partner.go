@@ -40,7 +40,7 @@ func (p *partnerRepo) Create(ctx context.Context, createPartner models.CreatePar
 		p.log.Error("error is while inserting data", logger.Error(err))
 	}
 
-	return  uid.String(), err
+	return uid.String(), err
 }
 
 func (p *partnerRepo) GetByID(ctx context.Context, pKey models.PrimaryKey) (models.Partner, error) {
@@ -71,9 +71,10 @@ func (p *partnerRepo) GetList(ctx context.Context, request models.GetListRequest
 		offset            = (page - 1) * request.Limit
 		query, countQuery string
 		count             = 0
-		partners        = []models.Partner{}
+		partners          = []models.Partner{}
 		search            = request.Search
 	)
+
 	countQuery = `SELECT count(1) FROM partners WHERE video_verify = true`
 	if search != "" {
 		countQuery += fmt.Sprintf(` and full_name ilike '%%%s%%'`, search)
@@ -83,12 +84,16 @@ func (p *partnerRepo) GetList(ctx context.Context, request models.GetListRequest
 		return models.PartnerResponse{}, err
 	}
 
-	query = `SELECT id, full_name, video_link, score, image_path, created_at FROM partners WHERE video_verify = true`
+	query = `SELECT id, full_name, video_link, score, created_at 
+	         FROM partners 
+	         WHERE video_verify = true`
 	if search != "" {
 		query += fmt.Sprintf(` and full_name ilike '%%%s%%'`, search)
 	}
 
-	query += ` LIMIT $1 OFFSET $2`
+	// Sort by score in descending order
+	query += ` ORDER BY score DESC LIMIT $1 OFFSET $2`
+
 	rows, err := p.db.Query(ctx, query, request.Limit, offset)
 	if err != nil {
 		p.log.Error("error is while selecting all", logger.Error(err))
@@ -102,25 +107,24 @@ func (p *partnerRepo) GetList(ctx context.Context, request models.GetListRequest
 			&partner.FullName,
 			&partner.VideoLink,
 			&partner.Score,
-			&partner.ImagePath,
 			&partner.CreatedAt,
-			); err != nil {
+		); err != nil {
 			p.log.Error("error is while scanning partner", logger.Error(err))
 			return models.PartnerResponse{}, err
 		}
 
-
 		partners = append(partners, partner)
 	}
+
 	return models.PartnerResponse{
 		Partners: partners,
-		Count:      count,
+		Count:    count,
 	}, nil
 }
 
-func (p *partnerRepo) Update(ctx context.Context, id string, imagePath string)  error {
-	query := `UPDATE partners SET image_path = $1, video_verify = true, updated_at = now() WHERE id = $2`
-	if _, err := p.db.Exec(ctx, query, imagePath, id); err != nil {
+func (p *partnerRepo) Update(ctx context.Context, id string) error {
+	query := `UPDATE partners SET video_verify = true, updated_at = now() WHERE id = $1`
+	if _, err := p.db.Exec(ctx, query, id); err != nil {
 		p.log.Error("error is while updating partner with image", logger.Error(err))
 		return err
 	}
@@ -152,7 +156,7 @@ func (p *partnerRepo) PhoneExist(ctx context.Context, phone string) (bool, error
 	return exists, nil
 }
 
-func (p *partnerRepo) IEmailExist(ctx context.Context, email string) (bool, error) {
+func (p *partnerRepo) EmailExist(ctx context.Context, email string) (bool, error) {
 	var exists bool
 	err := p.db.QueryRow(ctx, `
 		SELECT EXISTS (SELECT 1 FROM partners WHERE email = $1)
@@ -165,7 +169,7 @@ func (p *partnerRepo) IEmailExist(ctx context.Context, email string) (bool, erro
 	return exists, nil
 }
 
-func (p *partnerRepo) IVideoLinkExist(ctx context.Context, videoLink string) (bool, error) {
+func (p *partnerRepo) VideoLinkExist(ctx context.Context, videoLink string) (bool, error) {
 	var exists bool
 	err := p.db.QueryRow(ctx, `
 		SELECT EXISTS (SELECT 1 FROM partners WHERE video_link = $1)

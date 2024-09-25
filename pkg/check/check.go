@@ -1,10 +1,8 @@
 package check
 
 import (
-	"context"
-	"fmt"
+
 	"unicode"
-	"it-tanlov/storage"
 )
 
 func PhoneNumber(phone string) bool {
@@ -18,35 +16,4 @@ func PhoneNumber(phone string) bool {
 	return true
 }
 
-func IPhoneExist(phone string, partnerStorage storage.IPartnerStorage) (bool, error) {
-	exists, err := partnerStorage.PhoneExist(context.Background(), phone)
-	if err != nil {
-		return false, fmt.Errorf("error while checking phone existence: %w", err)
-	}
-	return exists, nil
-}
 
-func IEmailExist(email string, partnerStorage storage.IPartnerStorage) (bool, error) {
-	exists, err := partnerStorage.IEmailExist(context.Background(), email)
-	if err != nil {
-		return false, fmt.Errorf("error while checking email existence: %w", err)
-	}
-	return exists, nil
-}
-
-func IVideoLinkExist(video_link string, partnerStorage storage.IPartnerStorage) (bool, error) {
-	exists, err := partnerStorage.IVideoLinkExist(context.Background(), video_link)
-	if err != nil {
-		return false, fmt.Errorf("error while checking video_link existence: %w", err)
-	}
-	return exists, nil
-}
-
-
-func IUserTelegramIDExist(telegramID int, userStorage storage.IUserStorage) (bool, error) {
-	exists, err := userStorage.IUserTelegramIDExist(context.Background(), telegramID)
-	if err != nil {
-		return false, fmt.Errorf("error while checking phone existence: %w", err)
-	}
-	return exists, nil
-}

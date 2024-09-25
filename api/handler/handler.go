@@ -6,7 +6,6 @@ import (
 	"it-tanlov/api/models"
 	"it-tanlov/pkg/logger"
 	"it-tanlov/service"
-	"it-tanlov/storage"
 
 	"github.com/gin-gonic/gin"
 
@@ -14,38 +13,33 @@ import (
 )
 
 type Handler struct {
-	services service.IServiceManager
-	storage  storage.IStorage
-	log      logger.ILogger
-	bot      *tgbotapi.BotAPI
-	pendingPartnerImages map[int64]string 
+	services             service.IServiceManager
+	log                  logger.ILogger
+	bot                  *tgbotapi.BotAPI
+	pendingPartnerImages map[int64]string
 }
 
-func New(services service.IServiceManager, storage storage.IStorage, log logger.ILogger, bot *tgbotapi.BotAPI) Handler {
+func New(services service.IServiceManager, log logger.ILogger, bot *tgbotapi.BotAPI) Handler {
 	return Handler{
-		services: services,
-		storage:  storage,
-		log:      log,
-		bot: bot,
+		services:             services,
+		log:                  log,
+		bot:                  bot,
 		pendingPartnerImages: make(map[int64]string),
 	}
 }
 
 func (h *Handler) HandleUpdate(update tgbotapi.Update) {
-    if update.Message != nil {
-        // Agar xabar rasm bo'lsa
-        if update.Message.Photo != nil {
-            h.HandleImageMessage(update)
-        } else if update.Message.Text != "" {
-            if len(update.Message.Text) > 12 && update.Message.Text[:12] == "/start vote_" {
-                h.AddVote(update.Message)
-            }
-        }
-    } else if update.CallbackQuery != nil {
-        h.HandleCallbackQuery(update.CallbackQuery)
-    }
+	if update.Message != nil {
+		// Agar xabar rasm bo'lsa
+		if update.Message.Text != "" {
+			if len(update.Message.Text) > 12 && update.Message.Text[:12] == "/start vote_" {
+				h.AddVote(update.Message)
+			}
+		}
+	} else if update.CallbackQuery != nil {
+		h.HandleCallbackQuery(update.CallbackQuery)
+	}
 }
-
 
 func handleResponse(c *gin.Context, log logger.ILogger, msg string, statusCode int, data interface{}) {
 	resp := models.Response{}
