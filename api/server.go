@@ -4,14 +4,10 @@ import (
 	"context"
 	"it-tanlov/api/handler"
 	"it-tanlov/config"
-	"it-tanlov/pkg/logger"
-	"it-tanlov/service"
-	"it-tanlov/storage"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -29,10 +25,6 @@ type Server struct {
 
 func New(
 	cfg config.Config,
-	log logger.ILogger,
-	service service.IServiceManager,
-	storage storage.IStorage,
-	bot *tgbotapi.BotAPI,
 	h handler.Handler,
 ) *Server {
 	r := gin.New()

@@ -30,7 +30,6 @@ func New(services service.IServiceManager, log logger.ILogger, bot *tgbotapi.Bot
 
 func (h *Handler) HandleUpdate(update tgbotapi.Update) {
 	if update.Message != nil {
-		// Agar xabar rasm bo'lsa
 		if update.Message.Text != "" {
 			if len(update.Message.Text) > 12 && update.Message.Text[:12] == "/start vote_" {
 				h.AddVote(update.Message)

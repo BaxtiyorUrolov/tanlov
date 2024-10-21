@@ -1,5 +1,3 @@
-//api/handler/partner.go
-
 package handler
 
 import (
@@ -82,19 +80,17 @@ func (h *Handler) CreatePartner(c *gin.Context) {
 
 	message := fmt.Sprintf("New partner created!\nName: %s\nPhone: %s\nEmail: %s\nVideo link: %s", partner.FullName, partner.Phone, partner.Email, partner.VideoLink)
 
-	// Create inline buttons with callback data
 	acceptButton := tgbotapi.NewInlineKeyboardButtonData("Accept", "accept_partner_"+partner.ID)
 	rejectButton := tgbotapi.NewInlineKeyboardButtonData("Reject", "reject_partner_"+partner.ID)
 
-	// Arrange buttons in a single row
 	inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(acceptButton, rejectButton),
 	)
 
 	msg := tgbotapi.NewMessage(telegramUserID, message)
-	msg.ReplyMarkup = inlineKeyboard // Attach inline keyboard to the message
+	msg.ReplyMarkup = inlineKeyboard
 
-	_, sendErr := h.bot.Send(msg) // h.bot is the Telegram bot instance
+	_, sendErr := h.bot.Send(msg)
 	if sendErr != nil {
 		h.log.Error("Error while sending message to Telegram user", logger.Error(sendErr))
 	}
@@ -111,14 +107,12 @@ func (h *Handler) HandleCallbackQuery(callbackQuery *tgbotapi.CallbackQuery) {
 	if data[:15] == "reject_partner_" {
 		partnerID := data[15:]
 
-		// Delete the partner from the storage
 		err := h.services.Partner().Delete(context.Background(), partnerID)
 		if err != nil {
 			h.log.Error("Error deleting partner", logger.Error(err))
 			return
 		}
 
-		// Notify the user about the rejection
 		editMsg := tgbotapi.NewEditMessageText(telegramUserID, messageID, "Partner has been rejected and deleted.")
 		if _, err := h.bot.Send(editMsg); err != nil {
 			h.log.Error("Error sending edit message", logger.Error(err))
@@ -126,7 +120,6 @@ func (h *Handler) HandleCallbackQuery(callbackQuery *tgbotapi.CallbackQuery) {
 	} else if data[:15] == "accept_partner_" {
 		partnerID := data[15:]
 
-		// Partnerni tasdiqlash va video_verify flagini o'zgartirish
 		err := h.services.Partner().Update(context.Background(), partnerID)
 		if err != nil {
 			h.log.Error("Error verifying partner", logger.Error(err))

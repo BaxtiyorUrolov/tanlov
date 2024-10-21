@@ -39,7 +39,7 @@ func main() {
 
 	h := handler.New(services, log, botInstance)
 
-	server := api.New(cfg, log, services, store, botInstance, h)
+	server := api.New(cfg, h)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
